@@ -7,27 +7,27 @@ const ctx = canvas.getContext('2d');
 const ball = {
     x: canvas.width / 2,
     y: canvas.height / 2,
-    radius: 10,
+    radius: 7, // Smaller radius
     velocityX: 5,
     velocityY: 5,
-    speed: 7,
+    speed: 10,
     color: "WHITE"
 };
 
 const userPaddle = {
     x: 0, // left side of canvas
-    y: (canvas.height - 100) / 2, // -100 the height of paddle
-    width: 10,
-    height: 100,
+    y: (canvas.height - 70) / 2, // Adjusted for the smaller height
+    width: 7, // Narrower paddle
+    height: 70, // Shorter paddle
     score: 0,
     color: "WHITE"
 };
 
 const aiPaddle = {
-    x: canvas.width - 10, // - width of paddle
-    y: (canvas.height - 100) / 2, // -100 the height of paddle
-    width: 10,
-    height: 100,
+    x: canvas.width - 7, // Adjust for the narrower paddle
+    y: (canvas.height - 70) / 2, // Adjusted for the smaller height
+    width: 7, // Narrower paddle
+    height: 70, // Shorter paddle
     score: 0,
     color: "WHITE"
 };
@@ -71,7 +71,7 @@ function update() {
     ball.y += ball.velocityY;
 
     // Simple AI to control the aiPaddle (move towards the ball)
-    aiPaddle.y += ((ball.y - (aiPaddle.y + aiPaddle.height / 2))) * 0.09;
+    aiPaddle.y += ((ball.y - (aiPaddle.y + aiPaddle.height / 2))) * 0.14;
 
     // Collision detection on paddles
     let player = (ball.x < canvas.width / 2) ? userPaddle : aiPaddle;
