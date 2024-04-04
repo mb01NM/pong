@@ -85,22 +85,21 @@ function update() {
     let player = (ball.x < canvas.width / 2) ? userPaddle : aiPaddle;
 
     if (collision(ball, player)) {
-        // Calculate angle in RADIANS
-        let angle = 0;
-        if (ball.y < (player.y + player.height / 2)) {
-            // If ball hit the top of paddle
-            angle = -Math.PI / 4;
-        } else if (ball.y > (player.y + player.height / 2)) {
-            // If ball hit the bottom of paddle
-            angle = Math.PI / 4;
-        }
+        // Calculate where the ball hits the paddle
+        let collidePoint = (ball.y - (player.y + player.height / 2));
+        // Normalize the collision point from -1 to 1 (-1 being the top of the paddle, 1 being the bottom)
+        collidePoint = collidePoint / (player.height / 2);
 
-        // Change velocity of ball
-        ball.velocityX = (player === userPaddle ? 1 : -1) * ball.speed * Math.cos(angle);
-        ball.velocityY = ball.speed * Math.sin(angle);
+        // Calculate the angle in Radians
+        let angleRad = (Math.PI / 4) * collidePoint; // This will max out at 45 degrees
 
-        // Increase speed after each hit
-        ball.speed += 0.1;
+        // Change the X and Y velocity direction
+        let direction = (ball.x < canvas.width / 2) ? 1 : -1;
+        ball.velocityX = direction * ball.speed * Math.cos(angleRad);
+        ball.velocityY = ball.speed * Math.sin(angleRad);
+
+        // Speed up the ball every hit
+        ball.speed += 0.5;
     }
 
     // Detect collision with top and bottom walls
