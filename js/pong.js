@@ -41,7 +41,7 @@ function drawRect(x, y, w, h, color) {
 function drawCircle(x, y, r, color) {
     ctx.fillStyle = color;
     ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI*2, false);
+    ctx.arc(x, y, r, 0, Math.PI * 2, false);
     ctx.closePath();
     ctx.fill();
 }
@@ -65,10 +65,74 @@ function render() {
     drawText(aiPaddle.score, 3 * canvas.width / 4, canvas.height / 5, "WHITE");
 }
 
-// Update game state
 function update() {
-    // Here we would update the positions of paddles and ball
+    // Move the ball by its velocity
+    ball.x += ball.velocityX;
+    ball.y += ball.velocityY;
+
+    // Simple AI to control the aiPaddle (move towards the ball)
+    aiPaddle.y += ((ball.y - (aiPaddle.y + aiPaddle.height / 2))) * 0.09;
+
+    // Collision detection on paddles
+    let player = (ball.x < canvas.width / 2) ? userPaddle : aiPaddle;
+
+    if (collision(ball, player)) {
+        // Calculate angle in RADIANS
+        let angle = 0;
+        if (ball.y < (player.y + player.height / 2)) {
+            // If ball hit the top of paddle
+            angle = -Math.PI / 4;
+        } else if (ball.y > (player.y + player.height / 2)) {
+            // If ball hit the bottom of paddle
+            angle = Math.PI / 4;
+        }
+
+        // Change velocity of ball
+        ball.velocityX = (player === userPaddle ? 1 : -1) * ball.speed * Math.cos(angle);
+        ball.velocityY = ball.speed * Math.sin(angle);
+
+        // Increase speed after each hit
+        ball.speed += 0.1;
+    }
+
+    // Detect collision with top and bottom walls
+    if (ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height) {
+        ball.velocityY = -ball.velocityY; // Reverse the Y velocity
+    }
+
+    // Point scored
+    if (ball.x - ball.radius < 0) {
+        // AI scores
+        aiPaddle.score++;
+        resetBall();
+    } else if (ball.x + ball.radius > canvas.width) {
+        // User scores
+        userPaddle.score++;
+        resetBall();
+    }
 }
+
+function collision(b, p) {
+    b.top = b.y - b.radius;
+    b.bottom = b.y + b.radius;
+    b.left = b.x - b.radius;
+    b.right = b.x + b.radius;
+
+    p.top = p.y;
+    p.bottom = p.y + p.height;
+    p.left = p.x;
+    p.right = p.x + p.width;
+
+    return b.right > p.left && b.bottom > p.top && b.left < p.right && b.top < p.bottom;
+}
+
+function resetBall() {
+    ball.x = canvas.width / 2;
+    ball.y = canvas.height / 2;
+    ball.velocityX = -ball.velocityX;
+    ball.speed = 7;
+}
+
 
 // Game loop
 function gameLoop() {
@@ -79,7 +143,22 @@ function gameLoop() {
 
 // Listen for keyboard events
 window.addEventListener('keydown', function(event) {
-    // Here we would handle paddle movement
+    switch (event.key) {
+        case "ArrowUp": // Up arrow key
+        case "w": // 'W' key
+            // Move the user paddle up
+            if (userPaddle.y > 0) {
+                userPaddle.y -= 20;
+            }
+            break;
+        case "ArrowDown": // Down arrow key
+        case "s": // 'S' key
+            // Move the user paddle down
+            if (userPaddle.y < canvas.height - userPaddle.height) {
+                userPaddle.y += 20;
+            }
+            break;
+    }
 });
 
 // Start the game
