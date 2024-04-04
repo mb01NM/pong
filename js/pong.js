@@ -1,3 +1,11 @@
+// Constants for initial settings
+const INITIAL_BALL_SPEED = 7;
+const BALL_RADIUS = 7;
+const PADDLE_WIDTH = 7;
+const PADDLE_HEIGHT = 70;
+const INITIAL_VELOCITY_X = 5;
+const INITIAL_VELOCITY_Y = 5;
+const AI_PADDLE_SPEED_FACTOR = 0.14;
 
 // Access the canvas and context
 const canvas = document.getElementById('pongCanvas');
@@ -7,27 +15,27 @@ const ctx = canvas.getContext('2d');
 const ball = {
     x: canvas.width / 2,
     y: canvas.height / 2,
-    radius: 7, // Smaller radius
-    velocityX: 5,
-    velocityY: 5,
-    speed: 10,
+    radius: BALL_RADIUS,
+    velocityX: INITIAL_VELOCITY_X,
+    velocityY: INITIAL_VELOCITY_Y,
+    speed: INITIAL_BALL_SPEED,
     color: "WHITE"
 };
 
 const userPaddle = {
     x: 0, // left side of canvas
-    y: (canvas.height - 70) / 2, // Adjusted for the smaller height
-    width: 7, // Narrower paddle
-    height: 70, // Shorter paddle
+    y: (canvas.height - PADDLE_HEIGHT) / 2,
+    width: PADDLE_WIDTH,
+    height: PADDLE_HEIGHT,
     score: 0,
     color: "WHITE"
 };
 
 const aiPaddle = {
-    x: canvas.width - 7, // Adjust for the narrower paddle
-    y: (canvas.height - 70) / 2, // Adjusted for the smaller height
-    width: 7, // Narrower paddle
-    height: 70, // Shorter paddle
+    x: canvas.width - PADDLE_WIDTH, // Adjust for the narrower paddle
+    y: (canvas.height - PADDLE_HEIGHT) / 2,
+    width: PADDLE_WIDTH,
+    height: PADDLE_HEIGHT,
     score: 0,
     color: "WHITE"
 };
@@ -130,9 +138,8 @@ function resetBall() {
     ball.x = canvas.width / 2;
     ball.y = canvas.height / 2;
     ball.velocityX = -ball.velocityX;
-    ball.speed = 7;
+    ball.speed = INITIAL_BALL_SPEED; // Reset the ball's speed to its initial value
 }
-
 
 // Game loop
 function gameLoop() {
@@ -143,20 +150,15 @@ function gameLoop() {
 
 let isMouseDown = false;
 
-// Event listener for mouse down
+// Mouse control event listeners
 canvas.addEventListener('mousedown', function(event) {
     isMouseDown = true;
 });
 
-// Event listener for mouse move
 canvas.addEventListener('mousemove', function(event) {
     if (isMouseDown) {
-        // Calculate the new y position based on the mouse position
-        // Get the mouse position relative to the canvas
         let rect = canvas.getBoundingClientRect();
         let mouseY = event.clientY - rect.top;
-
-        // Update the paddle position with some constraints
         userPaddle.y = mouseY - userPaddle.height / 2;
         if (userPaddle.y < 0) {
             userPaddle.y = 0;
@@ -166,7 +168,6 @@ canvas.addEventListener('mousemove', function(event) {
     }
 });
 
-// Event listener for mouse up
 window.addEventListener('mouseup', function(event) {
     isMouseDown = false;
 });
