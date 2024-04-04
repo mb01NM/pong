@@ -141,24 +141,34 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-// Listen for keyboard events
-window.addEventListener('keydown', function(event) {
-    switch (event.key) {
-        case "ArrowUp": // Up arrow key
-        case "w": // 'W' key
-            // Move the user paddle up
-            if (userPaddle.y > 0) {
-                userPaddle.y -= 20;
-            }
-            break;
-        case "ArrowDown": // Down arrow key
-        case "s": // 'S' key
-            // Move the user paddle down
-            if (userPaddle.y < canvas.height - userPaddle.height) {
-                userPaddle.y += 20;
-            }
-            break;
+let isMouseDown = false;
+
+// Event listener for mouse down
+canvas.addEventListener('mousedown', function(event) {
+    isMouseDown = true;
+});
+
+// Event listener for mouse move
+canvas.addEventListener('mousemove', function(event) {
+    if (isMouseDown) {
+        // Calculate the new y position based on the mouse position
+        // Get the mouse position relative to the canvas
+        let rect = canvas.getBoundingClientRect();
+        let mouseY = event.clientY - rect.top;
+
+        // Update the paddle position with some constraints
+        userPaddle.y = mouseY - userPaddle.height / 2;
+        if (userPaddle.y < 0) {
+            userPaddle.y = 0;
+        } else if (userPaddle.y > canvas.height - userPaddle.height) {
+            userPaddle.y = canvas.height - userPaddle.height;
+        }
     }
+});
+
+// Event listener for mouse up
+window.addEventListener('mouseup', function(event) {
+    isMouseDown = false;
 });
 
 // Start the game
